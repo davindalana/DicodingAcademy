@@ -1,0 +1,12 @@
+{
+  "name": "studi-kasus-module-bundler",
+  "version": "1.0.0",
+  "description": "Silakan lihat branch untuk melihat berkas atau source code yang diinginkan.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
