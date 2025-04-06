@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note App</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script type="module" src="main.js"></script>
+    <script type="module" src="components/deleteButton.js"></script>
+    <script type="module" src="components/header.js"></script>
+    <script type="module" src="components/inputTitle.js"></script>
+    <script type="module" src="components/inputBody.js"></script>
+</head>
+<body>
+    <custom-header title="Note App"></custom-header>
+    <div class ="container-input" id="add-note">
+        <h2 class="container-header">Tambahkan Note Baru</h2>
+        <form class="form" action="#" id="form">
+            <custom-input-title label="Judul" id="title" name="title"></custom-input-title>
+            <custom-input-body label="Catatan" id="body" name="body"></custom-input-body>
+            <input type="submit" value="Add" name="Submit" class="btn-submit">
+        </form>
+    </div>
+    <div class="container-catatan">
+        <h2 class="container-header">Log</h2>
+        
+        <div class="list-node" id="log"></div>
+    </div>
+</body>
+</html>
