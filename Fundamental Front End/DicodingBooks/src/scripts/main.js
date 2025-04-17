@@ -68,38 +68,55 @@ function main() {
     //   })
   };
 
-  const updateBook = (book) => {
-    const option = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Auth-Token": "12345",
-      },
-      body: JSON.stringify(book)
-    }
-    fetch(baseUrl + "/edit/" + book.id, option)
-      .then(respone => {
-        return respone.json();
-      })
-      .then(responeJson => {
-        showResponseMessage(responeJson.message);
-        getBook();
-      })
-  };
-
-  const removeBook = (bookId) => {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-      const responseJson = JSON.parse(this.responseText);
+  const updateBook = async (book) => {
+    try {
+      const option = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Auth-Token": "12345",
+        },
+        body: JSON.stringify(book)
+      }
+      const response = await fetch(baseUrl + "/edit/" + book.id, option);
+      const responseJson = await response.json();
       showResponseMessage(responseJson.message);
       getBook();
     }
-    xhr.onerror = function () {
-      showResponseMessage
+    catch (err) {
+      showResponseMessage(err);
     }
-    xhr.open('DELETE', `${baseUrl}/delete/${bookId}`);
-    xhr.setRequestHeader(`X-Auth-Token`, `12345`);
-    xhr.send();
+
+  };
+
+  const removeBook = async (bookId) => {
+    try {
+      const option = {
+        method: "DELETE",
+        headers: {
+          "X-Auth-Token": "12345",
+        }
+      }
+      const response = await fetch(baseUrl + `/delete/${bookId}`, option);
+      const responseJson = await response.json();
+      showResponseMessage(responseJson.message);
+      getBook();
+    }
+    catch (err) {
+      showResponseMessage(err)
+    }
+    // const xhr = new XMLHttpRequest();
+    // xhr.onload = function () {
+    //   const responseJson = JSON.parse(this.responseText);
+    //   showResponseMessage(responseJson.message);
+    //   getBook();
+    // }
+    // xhr.onerror = function () {
+    //   showResponseMessage
+    // }
+    // xhr.open('DELETE', `${baseUrl}/delete/${bookId}`);
+    // xhr.setRequestHeader(`X-Auth-Token`, `12345`);
+    // xhr.send();
     // tuliskan kode di sini!
   };
 
