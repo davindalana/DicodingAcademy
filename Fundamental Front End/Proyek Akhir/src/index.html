@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Note App</title>
+  </head>
+
+  <body>
+    <custom-header title="Note App"></custom-header>
+    <div class="container-input" id="add-note">
+      <h2 class="container-header">Tambahkan Note Baru</h2>
+      <div class="form-group">
+        <label for="title">Judul Catatan</label>
+        <input type="text" id="title" required />
+      </div>
+      <div class="form-group">
+        <label for="body">Isi Catatan</label>
+        <textarea id="body" required></textarea>
+      </div>
+      <form id="form">
+        <!-- input title dan body di sini -->
+        <input type="submit" value="Add" class="btn-submit" />
+      </form>
+    </div>
+    <div
+      id="loading"
+      style="display: none; text-align: center; margin-top: 1rem"
+    >
+      <p>Loading...</p>
+    </div>
+    <div class="container-catatan">
+      <h2 class="container-header">Log</h2>
+
+      <div class="list-node" id="log"></div>
+    </div>
+  </body>
+</html>
