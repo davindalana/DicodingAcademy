@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Note App</title>
   </head>
-
+  
   <body>
     <custom-header title="Note App"></custom-header>
     <div class="container-input" id="add-note">
-      <h2 class="container-header">Tambahkan Note Baru</h2>
+      <custom-title-blue text=""></custom-title-blue>
       <div class="form-group">
         <label for="title">Judul Catatan</label>
         <input type="text" id="title" required />
@@ -19,7 +19,6 @@
         <textarea id="body" required></textarea>
       </div>
       <form id="form">
-        <!-- input title dan body di sini -->
         <input type="submit" value="Add" class="btn-submit" />
       </form>
     </div>
@@ -30,8 +29,7 @@
       <p>Loading...</p>
     </div>
     <div class="container-catatan">
-      <h2 class="container-header">Log</h2>
-
+      <custom-title-yellow text="Log"></custom-title-yellow>
       <div class="list-node" id="log"></div>
     </div>
   </body>

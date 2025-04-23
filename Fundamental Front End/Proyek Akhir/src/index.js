@@ -1,4 +1,4 @@
 import "regenerator-runtime";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./styles/main.css";
 import "./scripts/main.js";
+import "./styles/main.css";

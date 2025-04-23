@@ -1,4 +1,6 @@
 import "../components/header.js";
+import "../components/blueTitle.js";
+import "../components/yellowTitle.js";
 
 const baseURL = "https://notes-api.dicoding.dev/v2/";
 const nodeListElement = document.querySelector("#log");
