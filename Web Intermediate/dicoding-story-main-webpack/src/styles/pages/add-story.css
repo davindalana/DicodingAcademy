@@ -1,0 +1,101 @@
+.story-upload {
+  background: var(--background-color);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.12);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  transition: all 0.3s ease-in-out;
+}
+
+.story-upload:hover {
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.2);
+}
+
+.story-upload__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.story-upload__title {
+  font-size: var(--font-lg);
+  color: var(--primary-color);
+  margin: 0;
+  padding-bottom: var(--space-xs);
+  position: relative;
+}
+
+.story-upload__title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 40px;
+  background: var(--accent-color);
+}
+
+.story-form {
+  margin-top: var(--space-md);
+}
+
+.story-upload .form-field {
+  margin-bottom: var(--space-lg);
+}
+
+.story-upload .form-label {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: var(--space-xs);
+  display: block;
+}
+
+.story-upload .form-textarea {
+  min-height: 140px;
+  width: 100%;
+  padding: var(--space-sm);
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #ccc);
+  resize: vertical;
+  font-family: inherit;
+  color: var(--primary-color);
+  background: #fff;
+}
+
+.story-upload .form-actions {
+  margin-top: var(--space-lg);
+}
+
+.story-upload .form-actions .btn-submit {
+  padding: var(--space-xs) var(--space-md);
+  border: none;
+  border-radius: 6px;
+  min-width: 140px;
+  font-weight: bold;
+  background: var(--primary-color);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.story-upload .form-actions .btn-submit:hover {
+  background: var(--secondary-color);
+  transform: scale(1.02);
+}
+
+@media screen and (max-width: 768px) {
+  .story-upload {
+    padding: var(--space-md);
+  }
+
+  .story-upload__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .story-upload .form-actions .btn-submit {
+    width: 100%;
+  }
+}
