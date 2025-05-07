@@ -1,0 +1,15 @@
+import RegisterPage from '../auth/register/register-page';
+import LoginPage from '../auth/login/login-page';
+import HomePage from '../view/home-page';
+// import AddStoryPage from '../pages/add/add-story-page';
+// import StoryDetailPage from '../pages/story-detail/story-detail-page';
+import { checkAuthenticatedRoute, checkUnauthenticatedRouteOnly } from '../utils/auth';
+
+export const routes = {
+  '#/login': () => checkUnauthenticatedRouteOnly(new LoginPage()),
+  '#/register': () => checkUnauthenticatedRouteOnly(new RegisterPage()),
+
+  '#/': () => checkAuthenticatedRoute(new HomePage()),
+  // '#/add': () => checkAuthenticatedRoute(new AddStoryPage()),
+  // '#/story/:id': () => checkAuthenticatedRoute(new StoryDetailPage()),
+};
