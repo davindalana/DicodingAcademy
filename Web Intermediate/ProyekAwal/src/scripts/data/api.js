@@ -42,7 +42,7 @@ export async function login({ email, password }) {
   return { ...json, ok: fetchResponse.ok };
 }
 
-export async function getAllStories({ page, size, location } = {}) {
+export async function getAllStories({ page, size, location = 1 } = {}) {
   const accessToken = getAccessToken();
   const query = new URLSearchParams();
   if (page) query.set('page', page);
@@ -51,11 +51,16 @@ export async function getAllStories({ page, size, location } = {}) {
 
   const fetchResponse = await fetch(`${ENDPOINTS.STORIES}?${query.toString()}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
+    cache: 'no-store',
   });
   const json = await fetchResponse.json();
+  console.log(json);
+  
 
   return { ...json, ok: fetchResponse.ok };
 }
+
+
 
 export async function getStoryById(id) {
   const accessToken = getAccessToken();
@@ -73,8 +78,8 @@ export async function addNewStory({ description, photo, lat, lon }) {
   const formData = new FormData();
   formData.set('description', description);
   formData.set('photo', photo);
-  if (lat !== undefined) formData.set('lat', lat);
-  if (lon !== undefined) formData.set('lon', lon);
+  if (lat !== undefined) formData.append('lat', lat);
+  if (lon !== undefined) formData.append('lon', lon);
 
   const fetchResponse = await fetch(ENDPOINTS.STORIES, {
     method: 'POST',
@@ -82,14 +87,15 @@ export async function addNewStory({ description, photo, lat, lon }) {
     body: formData,
   });
   const json = await fetchResponse.json();
+  console.log('Upload lat:', lat, 'lon:', lon);
 
   return { ...json, ok: fetchResponse.ok };
 }
 
 export async function addNewStoryAsGuest({ description, photo, lat, lon }) {
   const formData = new FormData();
-  formData.set('description', description);
-  formData.set('photo', photo);
+  formData.append('description', description);
+  formData.append('photo', photo);
   if (lat !== undefined) formData.set('lat', lat);
   if (lon !== undefined) formData.set('lon', lon);
 

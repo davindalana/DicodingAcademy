@@ -71,7 +71,6 @@ export default class App {
       if (confirm('Apakah Anda yakin ingin keluar?')) {
         getLogout();
 
-        // Redirect
         location.hash = '/login';
       }
     });
@@ -79,17 +78,29 @@ export default class App {
 
   async renderPage() {
     const url = getActiveRoute();
-    const route = routes[url];
+    const route = routes[url] || routes['#/'];
 
-    // Get page instance
+    if (!route || typeof route !== 'function') {
+      console.error(`Route for "${url}" is invalid or not a function.`);
+      return;
+    }
+
     const page = route();
 
     const transition = transitionHelper({
       updateDOM: async () => {
         this.#content.innerHTML = await page.render();
-        page.afterRender();
+        page.afterRender?.();
       },
     });
+
+    console.log('Routing ke:', url, 'dengan page:', page);
+
+    if (!page) {
+      console.error('Page tidak ditemukan untuk URL:', url);
+      return;
+    }
+    console.log('Active route:', url);
 
     transition.ready.catch(console.error);
     transition.updateCallbackDone.then(() => {

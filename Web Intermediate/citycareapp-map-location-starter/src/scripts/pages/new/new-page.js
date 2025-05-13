@@ -3,6 +3,7 @@ import { convertBase64ToBlob } from '../../utils';
 import * as CityCareAPI from '../../data/api';
 import { generateLoaderAbsoluteTemplate } from '../../templates';
 import Camera from '../../utils/camera';
+import Map from '../../utils/map';
 
 export default class NewPage {
   #presenter;
@@ -10,6 +11,7 @@ export default class NewPage {
   #camera;
   #isCameraOpen = false;
   #takenDocumentations = [];
+  #map = null;
 
   async render() {
     return `
@@ -26,130 +28,34 @@ export default class NewPage {
       </section>
   
       <section class="container">
-        <div class="new-form__container">
-          <form id="new-form" class="new-form">
-            <div class="form-control">
-              <label for="title-input" class="new-form__title__title">Judul Laporan</label>
-  
-              <div class="new-form__title__container">
-                <input
-                  id="title-input"
-                  name="title"
-                  placeholder="Masukkan judul laporan"
-                  aria-describedby="title-input-more-info"
-                >
+      <div class="new-form__container">
+        <form id="new-form" class="new-form">
+          <!-- ...kode lainnya disembunyikan... -->
+ 
+          <div class="form-control">
+            <div class="new-form__location__title">Lokasi</div>
+ 
+            <div class="new-form__location__container">
+              <div class="new-form__location__map__container">
+                <div id="map" class="new-form__location__map"></div>
+                <div id="map-loading-container"></div>
               </div>
-              <div id="title-input-more-info">Pastikan judul laporan dibuat dengan jelas dan deskriptif dalam 1 kalimat.</div>
-            </div>
-            <div class="form-control">
-              <div class="new-form__damage-level__title">Tingkat Kerusakan</div>
-  
-              <div class="new-form__damage-level__container">
-                <div class="new-form__damage-level__minor__container">
-                  <input id="damage-level-minor-input" type="radio" name="damageLevel" value="minor">
-                  <label for="damage-level-minor-input">
-                    Rendah
-                    <span title="Contoh: Lubang kecil di jalan, kerusakan ringan pada tanda lalu lintas, dll.">
-                      <i class="far fa-question-circle"></i>
-                    </span>
-                  </label>
-                </div>
-                <div class="new-form__damage-level__moderate__container">
-                  <input id="damage-level-moderate-input" type="radio" name="damageLevel" value="moderate">
-                  <label for="damage-level-moderate-input">
-                    Sedang
-                    <span title="Contoh: Jalan retak besar, trotoar amblas, lampu jalan mati, dll.">
-                      <i class="far fa-question-circle"></i>
-                    </span>
-                  </label>
-                </div>
-                <div class="new-form__damage-level__severe__container">
-                  <input id="damage-level-severe-input" type="radio" name="damageLevel" value="severe">
-                  <label for="damage-level-severe-input">
-                    Berat
-                    <span title="Contoh: Jembatan ambruk, tiang listrik roboh, longsor yang menutup jalan, dll.">
-                      <i class="far fa-question-circle"></i>
-                    </span>
-                  </label>
-                </div>
+              <div class="new-form__location__lat-lng">
+                <input type="number" name="latitude" value="-6.175389" disabled>
+                <input type="number" name="longitude" value="106.827139" disabled>
               </div>
             </div>
-            <div class="form-control">
-              <label for="description-input" class="new-form__description__title">Keterangan</label>
-  
-              <div class="new-form__description__container">
-                <textarea
-                  id="description-input"
-                  name="description"
-                  placeholder="Masukkan keterangan lengkap laporan. Anda dapat menjelaskan apa kejadiannya, dimana, kapan, dll."
-                ></textarea>
-              </div>
-            </div>
-            <div class="form-control">
-              <label for="documentations-input" class="new-form__documentations__title">Dokumentasi</label>
-              <div id="documentations-more-info">Anda dapat menyertakan foto sebagai dokumentasi.</div>
-  
-              <div class="new-form__documentations__container">
-                <div class="new-form__documentations__buttons">
-                  <button id="documentations-input-button" class="btn btn-outline" type="button">
-                    Ambil Gambar
-                  </button>
-                  <input
-                    id="documentations-input"
-                    name="documentations"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    hidden="hidden"
-                    aria-multiline="true"
-                    aria-describedby="documentations-more-info"
-                  >
-                  <button id="open-documentations-camera-button" class="btn btn-outline" type="button">
-                    Buka Kamera
-                  </button>
-                </div>
-                <div id="camera-container" class="new-form__camera__container">
-                  <video id="camera-video" class="new-form__camera__video">
-                    Video stream not available.
-                  </video>
-                  <canvas id="camera-canvas" class="new-form__camera__canvas"></canvas>
-  
-                  <div class="new-form__camera__tools">
-                    <select id="camera-select"></select>
-                    <div class="new-form__camera__tools_buttons">
-                      <button id="camera-take-button" class="btn" type="button">
-                        Ambil Gambar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <ul id="documentations-taken-list" class="new-form__documentations__outputs"></ul>
-              </div>
-            </div>
-            <div class="form-control">
-              <div class="new-form__location__title">Lokasi</div>
-  
-              <div class="new-form__location__container">
-                <div class="new-form__location__map__container">
-                  <div id="map" class="new-form__location__map"></div>
-                  <div id="map-loading-container"></div>
-                </div>
-                <div class="new-form__location__lat-lng">
-                  <input type="number" name="latitude" value="-6.175389">
-                  <input type="number" name="longitude" value="106.827139">
-                </div>
-              </div>
-            </div>
-            <div class="form-buttons">
-              <span id="submit-button-container">
-                <button class="btn" type="submit">Buat Laporan</button>
-              </span>
-              <a class="btn btn-outline" href="#/">Batal</a>
-            </div>
-          </form>
-        </div>
-      </section>
-    `;
+          </div>
+          <div class="form-buttons">
+            <span id="submit-button-container">
+              <button class="btn" type="submit">Buat Laporan</button>
+            </span>
+            <a class="btn btn-outline" href="#/">Batal</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  `;
   }
 
   async afterRender() {
@@ -213,7 +119,38 @@ export default class NewPage {
   }
 
   async initialMap() {
-    // TODO: map initialization
+    this.#map = await Map.build('#map', {
+      zoom: 15,
+      locate: true,
+    });
+
+    // Preparing marker for select coordinate
+    const centerCoordinate = this.#map.getCenter();
+
+    this.#updateLatLngInput(centerCoordinate.latitude, centerCoordinate.longitude);
+
+    const draggableMarker = this.#map.addMarker(
+      [centerCoordinate.latitude, centerCoordinate.longitude],
+      { draggable: 'true' },
+    );
+
+    draggableMarker.addEventListener('move', (event) => {
+      const coordinate = event.target.getLatLng();
+      this.#updateLatLngInput(coordinate.lat, coordinate.lng);
+    });
+
+    this.#map.addMapEventListener('click', (event) => {
+      draggableMarker.setLatLng(event.latlng);
+
+      // Keep center with user view
+      event.sourceTarget.flyTo(event.latlng);
+    });
+
+  }
+
+  #updateLatLngInput(latitude, longitude) {
+    this.#form.elements.namedItem('latitude').value = latitude;
+    this.#form.elements.namedItem('longitude').value = longitude;
   }
 
   #setupCamera() {

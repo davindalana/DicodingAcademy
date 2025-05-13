@@ -14,17 +14,17 @@ export default class HomePresenter {
       this.#view.hideMapLoading();
 
       this.#view.showLoading();
-      const response = await this.#model.getAllReports();
+      const response = await this.#model.getAllStories();
 
       if (!response.ok) {
-        this.#view.populateReportsListError(response.message);
+        this.#view.populateStoriesListError(response.message);
         return;
       }
 
       const stories = response.listStory || [];
-      this.#view.populateReportsList(response.message, stories);
+      this.#view.populateStoriesList(response.message, stories);
     } catch (error) {
-      this.#view.populateReportsListError(error.message);
+      this.#view.populateStoriesListError(error.message);
     } finally {
       this.#view.hideLoading();
     }

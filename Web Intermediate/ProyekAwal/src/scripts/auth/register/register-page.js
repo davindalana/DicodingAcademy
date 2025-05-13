@@ -1,5 +1,5 @@
 import RegisterPresenter from '../presenter/register-presenter';
-import * as CityCareAPI from '../../data/api';
+import * as StoryApp from '../../data/api';
 
 export default class RegisterPage {
   #presenter = null;
@@ -47,7 +47,7 @@ export default class RegisterPage {
   async afterRender() {
     this.#presenter = new RegisterPresenter({
       view: this,
-      model: CityCareAPI,
+      model: StoryApp,
     });
 
     this.#setupForm();
@@ -62,7 +62,7 @@ export default class RegisterPage {
         email: document.getElementById('email-input').value,
         password: document.getElementById('password-input').value,
       };
-      await this.#presenter.getRegistered(data);
+      await this.#presenter.register(data);
     });
   }
 

@@ -2,14 +2,19 @@ export function sleep(time = 1000) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-export function showFormattedDate(date, locale = 'en-US', options = {}) {
-  return new Date(date).toLocaleDateString(locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    ...options,
-  });
+export function _localizeDate
+  (dateString) {
+  const date = new Date(dateString);
+
+  return new Intl.DateTimeFormat("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
+
 
 export async function createCarousel(containerElement, options = {}) {
   const { tns } = await import('tiny-slider');

@@ -192,9 +192,7 @@ export async function subscribePushNotification({ endpoint, keys: { p256dh, auth
 
 export async function unsubscribePushNotification({ endpoint }) {
   const accessToken = getAccessToken();
-  const data = JSON.stringify({
-    endpoint,
-  });
+  const data = JSON.stringify({ endpoint });
 
   const fetchResponse = await fetch(ENDPOINTS.UNSUBSCRIBE, {
     method: 'DELETE',
@@ -211,6 +209,7 @@ export async function unsubscribePushNotification({ endpoint }) {
     ok: fetchResponse.ok,
   };
 }
+
 
 export async function sendReportToMeViaNotification(reportId) {
   const accessToken = getAccessToken();

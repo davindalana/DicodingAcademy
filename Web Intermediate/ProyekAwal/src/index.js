@@ -15,12 +15,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     drawerNavigation: document.getElementById('navigation-drawer'),
     skipLinkButton: document.getElementById('skip-link'),
   });
+  const skipLinkButton = document.getElementById('skip-link');
+  console.log(skipLinkButton);
+  if (app.skipLinkButton) {
+    app.skipLinkButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      document.getElementById("main-content").focus();
+    });
+  } else {
+    console.error('Elemen skip-link tidak ditemukan!');
+  }
+
+
   await app.renderPage();
 
   window.addEventListener('hashchange', async () => {
-    await app.renderPage();
-
-    // Stop all active media
+    try {
+      await app.renderPage();
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      console.error(error);
+    }
     Camera.stopAllStreams();
   });
 });

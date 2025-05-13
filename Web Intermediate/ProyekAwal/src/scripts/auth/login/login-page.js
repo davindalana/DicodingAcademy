@@ -1,5 +1,5 @@
 import LoginPresenter from '../presenter/login-presenter';
-import * as CityCareAPI from '../../data/api';
+import * as StoryApp from '../../data/api';
 import * as AuthModel from '../../utils/auth';
 
 export default class LoginPage {
@@ -41,7 +41,7 @@ export default class LoginPage {
   async afterRender() {
     this.#presenter = new LoginPresenter({
       view: this,
-      model: CityCareAPI,
+      model: StoryApp,
       authModel: AuthModel,
     });
 
@@ -56,7 +56,7 @@ export default class LoginPage {
         email: document.getElementById('email-input').value,
         password: document.getElementById('password-input').value,
       };
-      await this.#presenter.getLogin(data);
+      await this.#presenter.login(data);
     });
   }
 

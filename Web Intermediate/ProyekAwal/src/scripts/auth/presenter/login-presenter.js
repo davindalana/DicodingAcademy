@@ -9,22 +9,28 @@ export default class LoginPresenter {
     this.#authModel = authModel;
   }
 
-  async getLogin({ email, password }) {
+  async login({ email, password }) {
     this.#view.showSubmitLoadingButton();
     try {
-      const response = await this.#model.getLogin({ email, password });
+      const response = await this.#model.login({ email, password });
 
       if (!response.ok) {
-        console.error('getLogin: response:', response);
+        console.error('login: response:', response);
         this.#view.loginFailed(response.message);
         return;
       }
 
-      this.#authModel.putAccessToken(response.data.accessToken);
+      if (response.loginResult && response.loginResult.token) {
+        this.#authModel.putAccessToken(response.loginResult.token);
+        this.#view.loginSuccessfully(response.message, response.loginResult);
+      } else {
+        this.#view.loginFailed(response.message || 'Login gagal, data tidak valid.');
+      }
+      
 
-      this.#view.loginSuccessfully(response.message, response.data);
+      this.#view.loginSuccessfully(response.message, response.loginResult);
     } catch (error) {
-      console.error('getLogin: error:', error);
+      console.error('login: error:', error);
       this.#view.loginFailed(error.message);
     } finally {
       this.#view.hideSubmitLoadingButton();

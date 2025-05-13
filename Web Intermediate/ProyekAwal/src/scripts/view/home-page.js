@@ -1,8 +1,8 @@
 import {
   generateLoaderAbsoluteTemplate,
-  generateReportItemTemplate,
-  generateReportsListEmptyTemplate,
-  generateReportsListErrorTemplate,
+  generateStoryItemTemplate,
+  generateStoryListEmptyTemplate,
+  generateStoryListErrorTemplate,
 } from '../templates';
 import HomePresenter from '../presenter/home-presenter';
 import Map from '../utils/map';
@@ -14,9 +14,9 @@ export default class HomePage {
 
   async render() {
     return `
-      <section>
-        <div class="reports-list__map__container">
-          <div id="map" class="reports-list__map"></div>
+      <section id ="skip-link">
+        <div class="story-list__map__container">
+          <div id="map" class="story-list__map"></div>
           <div id="map-loading-container"></div>
         </div>
       </section>
@@ -24,9 +24,9 @@ export default class HomePage {
       <section class="container">
         <h1 class="section-title">Daftar Story</h1>
 
-        <div class="reports-list__container">
-          <div id="reports-list"></div>
-          <div id="reports-list-loading-container"></div>
+        <div class="story-list__container">
+          <div id="story-list"></div>
+          <div id="story-list-loading-container"></div>
         </div>
       </section>
     `;
@@ -41,9 +41,9 @@ export default class HomePage {
     await this.#presenter.initialGalleryAndMap();
   }
 
-  populateReportsList(message, stories) {
+  populateStoriesList(message, stories) {
     if (stories.length <= 0) {
-      this.populateReportsListEmpty();
+      this.populateStoriesListEmpty();
       return;
     }
 
@@ -56,32 +56,34 @@ export default class HomePage {
       }
 
       return accumulator.concat(
-        generateReportItemTemplate({
+        generateStoryItemTemplate({
           id: story.id,
-          title: story.name,
+          name: story.name,
           description: story.description,
           photoUrl: story.photoUrl,
           date: story.createdAt,
+          lat: story.lat,
+          lon: story.lon,
         }),
       );
     }, '');
 
-    document.getElementById('reports-list').innerHTML = `
-      <div class="reports-list">${html}</div>
+    document.getElementById('story-list').innerHTML = `
+      <div class="story-list">${html}</div>
     `;
   }
 
-  populateReportsListEmpty() {
-    document.getElementById('reports-list').innerHTML = generateReportsListEmptyTemplate();
+  populateStoriesListEmpty() {
+    document.getElementById('story-list').innerHTML = generateStoryListEmptyTemplate();
   }
 
-  populateReportsListError(message) {
-    document.getElementById('reports-list').innerHTML = generateReportsListErrorTemplate(message);
+  populateStoriesListError(message) {
+    document.getElementById('story-list').innerHTML = generateStoryListErrorTemplate(message);
   }
 
   async initialMap() {
     this.#map = await Map.build('#map', {
-      zoom: 5,
+      zoom: 4,
       center: [-2.5489, 118.0149], // Koordinat tengah Indonesia
     });
   }
@@ -95,11 +97,11 @@ export default class HomePage {
   }
 
   showLoading() {
-    document.getElementById('reports-list-loading-container').innerHTML =
+    document.getElementById('story-list-loading-container').innerHTML =
       generateLoaderAbsoluteTemplate();
   }
 
   hideLoading() {
-    document.getElementById('reports-list-loading-container').innerHTML = '';
+    document.getElementById('story-list-loading-container').innerHTML = '';
   }
 }

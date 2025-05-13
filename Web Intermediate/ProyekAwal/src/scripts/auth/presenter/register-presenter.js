@@ -7,20 +7,20 @@ export default class RegisterPresenter {
     this.#model = model;
   }
 
-  async getRegistered({ name, email, password }) {
+  async register({ name, email, password }) {
     this.#view.showSubmitLoadingButton();
     try {
-      const response = await this.#model.getRegistered({ name, email, password });
+      const response = await this.#model.register({ name, email, password });
 
       if (!response.ok) {
-        console.error('getRegistered: response:', response);
+        console.error('register: response:', response);
         this.#view.registeredFailed(response.message);
         return;
       }
 
-      this.#view.registeredSuccessfully(response.message, response.data);
+      this.#view.registeredSuccessfully(response.message);
     } catch (error) {
-      console.error('getRegistered: error:', error);
+      console.error('register: error:', error);
       this.#view.registeredFailed(error.message);
     } finally {
       this.#view.hideSubmitLoadingButton();
