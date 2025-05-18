@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#007bff">
+    <meta name="description" content="Aplikasi untuk melaporkan kerusakan fasilitas umum">
+    <title>Story App</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/responsives.css">
+    <link rel="stylesheet" href="/leaflet.css">
+    <link rel="stylesheet" href="/tiny-slider.css">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="icon" href="src/public/icons/icon-192.png">
+</head>
+
+<body>
+    <a href="#main-content" id="skip-link">Menuju konten utama</a>
+    <header>
+        <nav id="navigation-drawer">
+            <div class="nav-brand">
+                <a href="#/" title="Story App">Story App</a>
+            </div>
+            <ul id="navlist-main"></ul>
+            <ul id="navlist"></ul>
+        </nav>
+        <button id="drawer-button" aria-label="Buka menu navigasi">☰</button>
+    </header>
+    <main id="main-content" tabindex="-1"></main>
+    <footer>
+        <div class="container">
+            <div class="footer-brand">
+                <h3>Story App</h3>
+                <p>© 2025 Dicoding. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="/app.bundle.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.bundle.js') // perhatikan: gunakan absolute path
+                    .then(reg => console.log('SW registered!', reg))
+                    .catch(err => console.error('SW registration failed:', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

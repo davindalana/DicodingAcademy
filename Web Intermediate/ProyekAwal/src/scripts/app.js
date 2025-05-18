@@ -7,6 +7,7 @@ import {
 import { setupSkipToContent, transitionHelper } from './utils/index';
 import { getAccessToken, getLogout } from './utils/auth';
 import { routes } from './routes/routes';
+import { registerPushNotifications, unsubscribePushNotifications, setupNotificationListener } from './utils/push-notification';
 
 export default class App {
   #content;
@@ -24,8 +25,14 @@ export default class App {
   }
 
   #init() {
+    if (!this.#content) {
+      console.error('Main content container (#content) not found in DOM');
+    }
     setupSkipToContent(this.#skipLinkButton, this.#content);
     this.#setupDrawer();
+    this.#setupPushNotificationControls();
+    this.#setupNotificationListener();
+    setupNotificationListener();
   }
 
   #setupDrawer() {
@@ -76,6 +83,20 @@ export default class App {
     });
   }
 
+  #setupPushNotificationControls() {
+    document.addEventListener('click', async (event) => {
+      if (event.target.closest('#subscribe-button') || event.target.closest('#story-detail-notify-me')) {
+        event.preventDefault();
+        await registerPushNotifications();
+      }
+
+      if (event.target.closest('#unsubscribe-button')) {
+        event.preventDefault();
+        await unsubscribePushNotifications();
+      }
+    });
+  }
+
   async renderPage() {
     const url = getActiveRoute();
     const route = routes[url] || routes['#/'];
@@ -89,8 +110,14 @@ export default class App {
 
     const transition = transitionHelper({
       updateDOM: async () => {
-        this.#content.innerHTML = await page.render();
-        page.afterRender?.();
+        if (!this.#content) {
+          console.error('Main content container (#content) not found');
+          return;
+        }
+        const renderedContent = await page.render();
+        this.#content.innerHTML = renderedContent;
+        console.log('DOM updated for route:', url);
+        await page.afterRender?.();
       },
     });
 
@@ -102,7 +129,10 @@ export default class App {
     }
     console.log('Active route:', url);
 
-    transition.ready.catch(console.error);
+    transition.ready.catch((error) => {
+      console.error('Transition error:', error);
+      this.#showNotification('Error', 'Failed to load page');
+    });
     transition.updateCallbackDone.then(() => {
       scrollTo({ top: 0, behavior: 'instant' });
       this.#setupNavigationList();

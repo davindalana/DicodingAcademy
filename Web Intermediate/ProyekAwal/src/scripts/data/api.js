@@ -55,12 +55,10 @@ export async function getAllStories({ page, size, location = 1 } = {}) {
   });
   const json = await fetchResponse.json();
   console.log(json);
-  
+
 
   return { ...json, ok: fetchResponse.ok };
 }
-
-
 
 export async function getStoryById(id) {
   const accessToken = getAccessToken();

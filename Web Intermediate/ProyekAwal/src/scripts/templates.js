@@ -62,6 +62,20 @@ export function generatestoryDetailErrorTemplate(message) {
   `;
 }
 
+export function generateNotificationBarTemplate({ title, body, id }) {
+  return `
+    <div id="notification-${id}" class="notification-bar" role="alert">
+      <div class="notification-bar__content">
+        <h3 class="notification-bar__title">${title}</h3>
+        <p class="notification-bar__body">${body}</p>
+      </div>
+      <button class="notification-bar__close" aria-label="Close notification">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `;
+}
+
 export function generateStoryItemTemplate({
   id,
   description,

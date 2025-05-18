@@ -1,0 +1,38 @@
+{
+  "name": "proyekawal",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config ./webpack.prod.js",
+    "start-dev": "webpack serve --config ./webpack.dev.js",
+    "serve": "http-server ./dist --port 3000",
+    "prettier": "prettier . --check",
+    "prettier:write": "prettier . --write",
+    "format": "prettier --write"
+  },
+  "keywords": [],
+  "author": "Davin Dalana Fidelio Fredra",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "babel-loader": "^10.0.0",
+    "copy-webpack-plugin": "^13.0.0",
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.3",
+    "mini-css-extract-plugin": "^2.9.2",
+    "prettier": "^3.5.3",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.99.8",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.1"
+  },
+  "dependencies": {
+    "clean-webpack-plugin": "^4.0.0",
+    "idb": "^8.0.3",
+    "leaflet": "^1.9.4",
+    "tiny-slider": "^2.9.4",
+    "workbox-webpack-plugin": "^7.3.0"
+  }
+}

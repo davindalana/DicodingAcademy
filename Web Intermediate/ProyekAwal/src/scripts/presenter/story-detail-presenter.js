@@ -1,3 +1,5 @@
+import { getStoryById } from '../data/api';
+
 export default class DetailStoryPresenter {
     #view;
     #model;
