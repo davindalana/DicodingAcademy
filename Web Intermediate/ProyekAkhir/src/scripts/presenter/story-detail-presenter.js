@@ -15,17 +15,13 @@ export default class DetailStoryPresenter {
             const token = this.#view.getAccessToken();
 
             let story;
-            // Coba ambil dari API
             if (navigator.onLine) {
                 const response = await this.#model.getStoryById(storyId, token);
                 if (!response || response.error || !response.story) {
                     throw new Error(response?.message || 'Data story tidak ditemukan');
                 }
                 story = response.story;
-                // Simpan ke IndexedDB untuk akses offline
-                await saveStory(story);
             } else {
-                // Jika offline, ambil dari IndexedDB
                 story = await getStory(storyId);
                 if (!story) {
                     throw new Error('Data story tidak tersedia secara offline');

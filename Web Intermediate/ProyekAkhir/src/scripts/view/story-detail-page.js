@@ -3,17 +3,18 @@ import * as DicodingAPI from '../data/api';
 import { generateLoaderAbsoluteTemplate, generateStoryDetailErrorTemplate } from '../templates';
 import Map from '../utils/map';
 import DetailStoryPresenter from '../presenter/story-detail-presenter';
-import { isStorySaved, saveStory, deleteStory } from '../utils/indexed-db';
+import SaveStoriesPresenter from '../presenter/saved-stories-presenter';
 
 export default class StoryDetailPage {
     #presenter;
+    #savePresenter;
     #map = null;
     #storyId = null;
     #story = null;
 
     async render() {
         return `
-      <section class="story-detail container" role="region" aria-label="Detail Story">
+      <section class="story-detail container" role="main" aria-label="Detail Story">
         <div class="story-detail__photo-container">
           <img id="story-photo" class="story-detail__photo" alt="Foto Story" src="" />
         </div>
@@ -42,10 +43,13 @@ export default class StoryDetailPage {
     }
 
     async afterRender() {
-        const urlParams = new URLSearchParams(window.location.hash.split('?')[0].replace('#/stories/', ''));
-        const storyId = urlParams.get('storyId') || urlParams.get('id');
-        console.log('afterRender: Checking .story-detail');
-        console.log('story-detail exists:', !!document.querySelector('.story-detail'));
+        const url = UrlParser.parseActivePathname();
+        this.#storyId = url.id;
+
+        if (!this.#storyId) {
+            this.displayStoryError('ID story tidak ditemukan');
+            return;
+        }
 
         if (!document.querySelector('.story-detail')) {
             console.error('Error: .story-detail container not found in DOM');
@@ -53,19 +57,13 @@ export default class StoryDetailPage {
             return;
         }
 
-        const url = UrlParser.parseActivePathname();
-        this.#storyId = url.id;
-        console.log('StoryId:', this.#storyId);
-        console.log('url:', url);
-
-        if (!this.#storyId) {
-            this.displayStoryError('ID story tidak ditemukan');
-            return;
-        }
-
         this.#presenter = new DetailStoryPresenter({
             view: this,
             model: DicodingAPI,
+        });
+
+        this.#savePresenter = new SaveStoriesPresenter({
+            view: this,
         });
 
         await this.#presenter.showStoryDetail(this.#storyId);
@@ -75,6 +73,12 @@ export default class StoryDetailPage {
 
     getAccessToken() {
         return localStorage.getItem('token');
+    }
+
+    showNotification({ title, body }) {
+        window.dispatchEvent(new CustomEvent('show-notification', {
+            detail: { title, body },
+        }));
     }
 
     async displayStoryDetail(story) {
@@ -127,14 +131,10 @@ export default class StoryDetailPage {
                 mainContent.innerHTML = generateStoryDetailErrorTemplate(message);
             } else {
                 console.error('Fallback failed: #main-content not found');
-                window.dispatchEvent(
-                    new CustomEvent('show-notification', {
-                        detail: {
-                            title: 'Error',
-                            body: message || 'Failed to display story details',
-                        },
-                    })
-                );
+                this.showNotification({
+                    title: 'Error',
+                    body: message || 'Failed to display story details',
+                });
             }
             return;
         }
@@ -152,15 +152,13 @@ export default class StoryDetailPage {
 
         if (this.#map && typeof this.#map.destroy === 'function') {
             try {
-                this.#map.destroy(); // gunakan method destroy()
+                this.#map.destroy();
                 this.#map = null;
             } catch (err) {
                 console.error('Error saat destroy map sebelumnya:', err);
             }
         }
 
-
-        // TUNGGU sampai layout siap (hindari offsetWidth error)
         requestAnimationFrame(() => {
             setTimeout(async () => {
                 try {
@@ -177,10 +175,9 @@ export default class StoryDetailPage {
                 } finally {
                     this.hideMapLoading();
                 }
-            }, 100); // tunggu 100ms setelah layout
+            }, 100);
         });
     }
-
 
     showMapLoading() {
         const mapLoadingContainer = document.getElementById('map-loading-container');
@@ -200,7 +197,12 @@ export default class StoryDetailPage {
         const saveButton = document.getElementById('save-story');
         const deleteButton = document.getElementById('delete-story');
 
-        const isSaved = await isStorySaved(this.#storyId);
+        if (!saveButton || !deleteButton) {
+            console.error('Button elements not found');
+            return;
+        }
+
+        const isSaved = await this.#savePresenter.isStorySaved(this.#storyId);
         if (isSaved) {
             saveButton.disabled = true;
             saveButton.textContent = 'Tersimpan';
@@ -220,16 +222,20 @@ export default class StoryDetailPage {
 
         if (saveBtn) {
             saveBtn.addEventListener('click', async () => {
+                if (!this.#story) {
+                    console.error('No story data available to save');
+                    this.showNotification({
+                        title: 'Gagal',
+                        body: 'Tidak ada data story untuk disimpan',
+                    });
+                    return;
+                }
+
                 try {
-                    await saveStory(this.#story);
-                    window.dispatchEvent(new CustomEvent('show-notification', {
-                        detail: { title: 'Berhasil', body: 'Story disimpan untuk offline' },
-                    }));
+                    await this.#savePresenter.saveStory(this.#story);
                     await this._updateButtonState();
-                } catch {
-                    window.dispatchEvent(new CustomEvent('show-notification', {
-                        detail: { title: 'Gagal', body: 'Gagal menyimpan story' },
-                    }));
+                } catch (error) {
+                    // Error sudah ditangani oleh SaveStoriesPresenter
                 }
             });
         }
@@ -237,15 +243,10 @@ export default class StoryDetailPage {
         if (deleteBtn) {
             deleteBtn.addEventListener('click', async () => {
                 try {
-                    await deleteStory(this.#storyId);
-                    window.dispatchEvent(new CustomEvent('show-notification', {
-                        detail: { title: 'Berhasil', body: 'Story dihapus dari penyimpanan offline' },
-                    }));
+                    await this.#savePresenter.deleteStory(this.#storyId);
                     await this._updateButtonState();
-                } catch {
-                    window.dispatchEvent(new CustomEvent('show-notification', {
-                        detail: { title: 'Gagal', body: 'Gagal menghapus story' },
-                    }));
+                } catch (error) {
+                    // Error sudah ditangani oleh SaveStoriesPresenter
                 }
             });
         }

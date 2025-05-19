@@ -1,6 +1,5 @@
 import { _localizeDate } from './utils/index';
 
-// Fungsi untuk memformat tanggal (diasumsikan sebagai pengganti showFormattedDate)
 const formatDate = (dateString, locale = 'id-ID') => {
   if (!dateString) return 'Tanggal tidak tersedia';
   const date = new Date(dateString);

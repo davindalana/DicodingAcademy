@@ -9,21 +9,23 @@ import Camera from './scripts/utils/camera';
 let isRendering = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const content = document.getElementById('main-content');
+  const drawerButton = document.getElementById('drawer-button');
+  const drawerNavigation = document.getElementById('navigation-drawer');
+  const skipLinkButton = document.getElementById('skip-link');
+
   const app = new App({
-    content: document.getElementById('main-content'),
-    drawerButton: document.getElementById('drawer-button'),
-    drawerNavigation: document.getElementById('navigation-drawer'),
-    skipLinkButton: document.getElementById('skip-link'),
+    content,
+    drawerButton,
+    drawerNavigation,
+    skipLinkButton,
   });
 
-  // Skip to main content handler
-  if (app.skipLinkButton) {
-    app.skipLinkButton.addEventListener('click', (event) => {
-      event.preventDefault();
-      const mainContent = document.getElementById('main-content');
-      if (mainContent) mainContent.focus();
-    });
-  }
+  // Skip to content accessibility (tidak perlu cek app.skipLinkButton, cukup pakai yang sudah diambil)
+  skipLinkButton?.addEventListener('click', (event) => {
+    event.preventDefault();
+    content?.focus();
+  });
 
   try {
     if (!isRendering) {
@@ -47,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       console.error('Render gagal:', error);
     } finally {
-      Camera.stopAllStreams(); // Selalu hentikan kamera setelah transisi
+      Camera.stopAllStreams(); // Hentikan kamera setiap ganti halaman
     }
   });
 });

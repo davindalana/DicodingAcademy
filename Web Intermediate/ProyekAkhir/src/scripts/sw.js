@@ -1,4 +1,4 @@
-const CACHE_NAME = 'story-app-v3';
+const CACHE_NAME = 'story-app-v4';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -40,23 +40,39 @@ self.addEventListener('activate', (event) => {
             )
         )
     );
-    // self.clients.claim(); // Opsional, bisa diaktifkan jika mau update langsung
 });
 
-// Fetch: Cache First untuk statis, Network with Cache Fallback untuk dinamis
 self.addEventListener('fetch', (event) => {
     const requestUrl = new URL(event.request.url);
 
     const path = requestUrl.pathname;
     const isStaticAsset = urlsToCache.includes(path) || urlsToCache.some(url => path.endsWith(url));
 
-    if (requestUrl.origin === location.origin && isStaticAsset) {
-        // Cache-first untuk asset statis
-        event.respondWith(
-            caches.match(event.request).then((response) => {
-                return response || fetch(event.request);
-            })
-        );
+    if (requestUrl.origin === location.origin) {
+        if (requestUrl.pathname === '/' || requestUrl.pathname.endsWith('index.html')) {
+            // Network-first untuk index.html
+            event.respondWith(
+                fetch(event.request)
+                    .then((response) => {
+                        return caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, response.clone());
+                            return response;
+                        });
+                    })
+                    .catch(() => caches.match(event.request))
+            );
+            return;
+        }
+
+        if (isStaticAsset) {
+            // Cache-first untuk asset statis lainnya
+            event.respondWith(
+                caches.match(event.request).then((response) => {
+                    return response || fetch(event.request);
+                })
+            );
+            return;
+        }
     } else {
         // Network-first untuk API / request dinamis dengan cache fallback
         event.respondWith(

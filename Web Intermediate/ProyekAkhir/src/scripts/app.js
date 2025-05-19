@@ -34,50 +34,62 @@ export default class App {
     this.#setupDrawer();
     this.#setupPushNotificationControls();
     this.#setupNotificationListener();
+    this.#setupNavigationList();
 
     window.addEventListener('hashchange', () => this.renderPage());
     this.renderPage();
   }
 
   #setupNotificationListener() {
-    // console.log('Mengatur listener notifikasi');
     setupNotificationListener();
   }
 
   #setupDrawer() {
-    this.#drawerButton.addEventListener('click', () => {
+    console.log('Drawer Button:', this.#drawerButton);
+    console.log('Drawer Navigation:', this.#drawerNavigation);
+    if (!this.#drawerButton || !this.#drawerNavigation) {
+      console.error('Drawer button or navigation not found');
+      return;
+    }
+    this.#drawerButton.addEventListener('click', (event) => {
+      event.stopPropagation();
       this.#drawerNavigation.classList.toggle('open');
+      console.log('Drawer classes:', this.#drawerNavigation.classList);
     });
-
     document.body.addEventListener('click', (event) => {
       const isTargetInsideDrawer = this.#drawerNavigation.contains(event.target);
       const isTargetInsideButton = this.#drawerButton.contains(event.target);
-
       if (!(isTargetInsideDrawer || isTargetInsideButton)) {
+        console.log('Closing drawer');
         this.#drawerNavigation.classList.remove('open');
       }
-
-      this.#drawerNavigation.querySelectorAll('a').forEach((link) => {
-        if (link.contains(event.target)) {
-          this.#drawerNavigation.classList.remove('open');
-        }
+    });
+    this.#drawerNavigation.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        console.log('Link clicked, closing drawer');
+        this.#drawerNavigation.classList.remove('open');
       });
     });
   }
 
   #setupNavigationList() {
     const isLogin = !!getAccessToken();
-    const navListMain = this.#drawerNavigation.children.namedItem('navlist-main');
-    const navList = this.#drawerNavigation.children.namedItem('navlist');
+    const navListMain = this.#drawerNavigation.querySelector('#navlist-main');
+    const navList = this.#drawerNavigation.querySelector('#navlist');
 
+    console.log('Is logged in:', isLogin);
+    console.log('NavListMain:', navListMain);
+    console.log('NavList:', navList);
     if (!isLogin) {
       navListMain.innerHTML = '';
       navList.innerHTML = generateUnauthenticatedNavigationListTemplate();
+      console.log('Unauthenticated nav:', navList.innerHTML);
       return;
     }
-
     navListMain.innerHTML = generateMainNavigationListTemplate();
     navList.innerHTML = generateAuthenticatedNavigationListTemplate();
+    console.log('Authenticated nav main:', navListMain.innerHTML);
+    console.log('Authenticated nav:', navList.innerHTML);
 
     const logoutButton = document.getElementById('logout-button');
     logoutButton.addEventListener('click', (event) => {

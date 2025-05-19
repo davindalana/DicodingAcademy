@@ -958,36 +958,24 @@ header {
   width: 35px;
 }
 
-.navigation-drawer {
-  min-height: 100vh;
-  width: 100%;
+#navigation-drawer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
   padding: 20px 10px;
   background-color: white;
-
-  display: flex;
+  z-index: 9999;
   flex-direction: column;
   gap: 20px;
-
-  position: fixed;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-
-  transform: translateY(-100%);
-  opacity: 0;
-  transition:
-    opacity 150ms,
-    inset-block-start 0ms 150ms,
-    transform 0ms 150ms;
-
-  z-index: 9999;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
 }
 
-.navigation-drawer.open {
-  inset-block-start: 90px;
-  transform: translateY(0);
-  opacity: 1;
-
-  transition: opacity 150ms;
+#navigation-drawer.open {
+  display: flex !important;
+  /* tambahkan !important untuk memaksa tampil */
 }
 
 .drawer-button {
@@ -1255,6 +1243,7 @@ header {
   margin: 0;
   font-size: 14px;
 }
+
 /* DETAIL PAGE */
 .story-detail__container,
 .story-detail {
@@ -1483,6 +1472,7 @@ header {
   background: none;
   color: #ccc;
 }
+
 /* END OF DETAIL PAGE */
 
 /* NEW story FORM */

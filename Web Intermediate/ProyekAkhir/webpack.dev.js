@@ -4,32 +4,22 @@ const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
   mode: 'development',
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
-    ],
-  },
+  devtool: 'inline-source-map', // memudahkan debugging
   devServer: {
-    hot: false,
-    static: [
-      path.resolve(__dirname, 'dist'), // default
-      path.resolve(__dirname, 'src/public'), // supaya manifest dan icons bisa diakses
-      path.resolve(__dirname, 'src/styles'), // untuk responsives.css dan styles.css
-      path.resolve(__dirname, 'node_modules/leaflet/dist'), // untuk leaflet.css
-      path.resolve(__dirname, 'node_modules/tiny-slider/dist'), // untuk tiny-slider.css
-      path.resolve(__dirname, 'src/scripts'), 
-    ],
-
-    open: false,
+    hot: true,  // hot reload
+    static: {
+      directory: path.resolve(__dirname, 'dist'),
+      watch: true,
+    },
     port: 9002,
+    open: true,
+    historyApiFallback: true,  // untuk SPA routing
     client: {
       overlay: {
         errors: true,
-        warnings: true,
+        warnings: false,
       },
     },
+    // publicPath otomatis mengikuti output.publicPath
   },
 });
