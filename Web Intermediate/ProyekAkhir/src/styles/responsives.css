@@ -67,6 +67,7 @@
 }
 
 @media screen and (width > 800px) {
+
   /* MAIN */
   .story-list__map__container,
   .story-list__map {
@@ -98,6 +99,7 @@
 }
 
 @media screen and (width > 1000px) {
+
   /* HEADER */
   .navigation-drawer {
     min-height: auto;
@@ -114,6 +116,16 @@
     opacity: 1;
   }
 
+  #navigation-drawer {
+    min-height: auto;
+    width: auto;
+    background-color: transparent;
+    position: static;
+    right: 0;
+    flex-grow: 1;
+    justify-content: space-between;
+  }
+
   .navigation-drawer__navlist-main,
   .navigation-drawer__navlist {
     flex-direction: row;
@@ -125,7 +137,7 @@
     display: inline-flex;
   }
 
-  .drawer-button {
+  #drawer-button {
     display: none;
   }
 

@@ -44,23 +44,25 @@ body {
 }
 
 .skip-link {
-  background: var(--primary-color);
-  padding: 4px 8px;
-
-  inset-inline: auto;
   position: absolute;
-
+  top: -40px;
+  left: 0;
+  background: var(--primary-color, #007bff); /* fallback ke biru */
   color: #ffffff;
+  padding: 8px 16px;
   font-size: 1rem;
   font-weight: 700;
-
-  transform: translateY(-10%);
+  text-decoration: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 1000;
+  transition: top 0.3s ease;
 }
 
 .skip-link:focus,
 .skip-link:focus-within {
-  transform: translateY(0%);
+  top: 0; /* tampil saat fokus */
 }
+
 
 .container {
   padding-inline: 32px;
@@ -258,18 +260,22 @@ i.loader-button {
 }
 
 /* HEADER */
+/* HEADER */
 header {
-  background-color: #007bff; /* warna biru */
+  background-color: #007bff;
   color: white;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 1rem;
   height: 56px;
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* BRAND */
 .nav-brand a {
   color: white;
   font-weight: bold;
@@ -277,15 +283,17 @@ header {
   text-decoration: none;
 }
 
+/* DRAWER BUTTON */
 #drawer-button {
-  margin-left: auto;
   font-size: 1.5rem;
   background: none;
   border: none;
   color: white;
   cursor: pointer;
+  display: none; /* default: tidak tampil, hanya untuk mobile */
 }
 
+/* NAVIGATION */
 #navigation-drawer {
   display: flex;
   gap: 1rem;
@@ -314,6 +322,47 @@ header {
 .navigation-drawer__navlist li a:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
+
+/* LOGOUT BUTTON */
+.logout-button {
+  background-color: transparent;
+  border: none;
+  color: #ff0000 !important;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* RESPONSIVE (mobile) */
+@media (max-width: 768px) {
+  #drawer-button {
+    display: block;
+  }
+
+  #navigation-drawer {
+    display: none; /* sembunyikan default, bisa di-toggle JS */
+    flex-direction: column;
+    background-color: #007bff;
+    position: absolute;
+    top: 56px;
+    left: 0;
+    width: 100%;
+    padding: 1rem;
+    z-index: 999;
+  }
+
+  #navigation-drawer.open {
+    display: flex;
+  }
+
+  .navigation-drawer__navlist-main,
+  .navigation-drawer__navlist {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
 
 
 .logout-button {
