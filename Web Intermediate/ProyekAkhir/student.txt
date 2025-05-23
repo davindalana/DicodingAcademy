@@ -1,3 +1,4 @@
-Nama  : Davin Dalana Fidelio Fredra
-ID    : FCC006D5Y1473
-Class : FC-45
+Nama   : Davin Dalana Fidelio Fredra
+ID     : FCC006D5Y1473
+Class  : FC-45
+Deploy : https://classy-mousse-50f17b.netlify.app/

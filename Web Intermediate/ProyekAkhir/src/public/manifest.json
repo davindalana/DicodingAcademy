@@ -1,8 +1,10 @@
 {
+    "id": "/#/",
     "name": "Story App",
     "short_name": "Story",
     "description": "Aplikasi untuk melaporkan kerusakan fasilitas umum",
-    "start_url": "/",
+    "start_url": "/#/",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#007bff",

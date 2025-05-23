@@ -38,6 +38,7 @@ export default class StoryDetailPage {
         <div class="back-button">
           <a class="btn story-item__read-more" href="#/" aria-label="Kembali ke daftar story">Back</a>
         </div>
+        <div id="notification" class="notification" style="display: none;"></div>
       </section>
     `;
     }
@@ -51,7 +52,8 @@ export default class StoryDetailPage {
             return;
         }
 
-        if (!document.querySelector('.story-detail')) {
+        const storyDetailContainer = document.querySelector('.story-detail');
+        if (!storyDetailContainer) {
             console.error('Error: .story-detail container not found in DOM');
             this.displayStoryError('Failed to render story detail page');
             return;
@@ -66,22 +68,31 @@ export default class StoryDetailPage {
             view: this,
         });
 
+        // Ensure buttons are rendered before updating state
         await this.#presenter.showStoryDetail(this.#storyId);
         await this._updateButtonState();
         this._setupActionButtons();
     }
 
     getAccessToken() {
-        return localStorage.getItem('token');
+        return localStorage.getItem('token') || '';
     }
 
     showNotification({ title, body }) {
-        window.dispatchEvent(new CustomEvent('show-notification', {
-            detail: { title, body },
-        }));
+        const notification = document.querySelector('#notification');
+        if (notification) {
+            notification.textContent = body || title;
+            notification.style.display = 'block';
+            setTimeout(() => (notification.style.display = 'none'), 3000);
+        } else {
+            console.warn('Notification element not found');
+            window.dispatchEvent(new CustomEvent('show-notification', {
+                detail: { title, body },
+            }));
+        }
     }
 
-    async displayStoryDetail(story) {
+    async displayStoryDetail(story, { isFromCache } = {}) {
         const photo = document.getElementById('story-photo');
         const name = document.getElementById('story-name');
         const date = document.getElementById('story-date');
@@ -109,6 +120,10 @@ export default class StoryDetailPage {
             : 'Tanggal tidak tersedia';
         description.textContent = story.description || 'Deskripsi tidak tersedia';
 
+        if (isFromCache) {
+            this.showNotification({ title: 'Offline', body: 'Loaded from offline cache' });
+        }
+
         if (story.lat !== undefined && story.lon !== undefined) {
             this._renderMap(story.lat, story.lon);
         } else {
@@ -119,6 +134,7 @@ export default class StoryDetailPage {
             }
         }
 
+        // Update button state after rendering story
         await this._updateButtonState();
     }
 
@@ -155,28 +171,23 @@ export default class StoryDetailPage {
                 this.#map.destroy();
                 this.#map = null;
             } catch (err) {
-                console.error('Error saat destroy map sebelumnya:', err);
+                console.error('Error destroying previous map:', err);
             }
         }
 
-        requestAnimationFrame(() => {
-            setTimeout(async () => {
-                try {
-                    this.#map = await Map.build('#story-map', {
-                        zoom: 13,
-                        center: [lat, lon],
-                    });
-
-                    this.#map.addMarker([lat, lon], { alt: 'Lokasi Story' }, { content: 'Lokasi Story' });
-                } catch (error) {
-                    console.error('Error rendering map:', error);
-                    mapContainer.innerHTML = '<p>Gagal memuat peta.</p>';
-                    mapContainer.setAttribute('aria-label', 'Gagal memuat peta');
-                } finally {
-                    this.hideMapLoading();
-                }
-            }, 100);
-        });
+        try {
+            this.#map = await Map.build('#story-map', {
+                zoom: 13,
+                center: [lat, lon],
+            });
+            this.#map.addMarker([lat, lon], { alt: 'Lokasi Story' }, { content: 'Lokasi Story' });
+        } catch (error) {
+            console.error('Error rendering map:', error);
+            mapContainer.innerHTML = '<p>Gagal memuat peta.</p>';
+            mapContainer.setAttribute('aria-label', 'Gagal memuat peta');
+        } finally {
+            this.hideMapLoading();
+        }
     }
 
     showMapLoading() {
@@ -198,21 +209,22 @@ export default class StoryDetailPage {
         const deleteButton = document.getElementById('delete-story');
 
         if (!saveButton || !deleteButton) {
-            console.error('Button elements not found');
+            console.warn('Button elements not found; DOM may not be fully rendered');
             return;
         }
 
-        const isSaved = await this.#savePresenter.isStorySaved(this.#storyId);
-        if (isSaved) {
-            saveButton.disabled = true;
-            saveButton.textContent = 'Tersimpan';
-            saveButton.setAttribute('aria-label', 'Story sudah disimpan');
-            deleteButton.disabled = false;
-        } else {
-            saveButton.disabled = false;
-            saveButton.textContent = 'Simpan';
-            saveButton.setAttribute('aria-label', 'Simpan story untuk akses offline');
-            deleteButton.disabled = true;
+        try {
+            const isSaved = await this.#savePresenter.isStorySaved(this.#storyId);
+            saveButton.disabled = isSaved;
+            saveButton.textContent = isSaved ? 'Tersimpan' : 'Simpan';
+            saveButton.setAttribute('aria-label', isSaved ? 'Story sudah disimpan' : 'Simpan story untuk akses offline');
+            deleteButton.disabled = !isSaved;
+        } catch (error) {
+            console.error('Error updating button state:', error);
+            this.showNotification({
+                title: 'Error',
+                body: 'Failed to update save/delete button state',
+            });
         }
     }
 
@@ -220,35 +232,48 @@ export default class StoryDetailPage {
         const saveBtn = document.getElementById('save-story');
         const deleteBtn = document.getElementById('delete-story');
 
-        if (saveBtn) {
-            saveBtn.addEventListener('click', async () => {
-                if (!this.#story) {
-                    console.error('No story data available to save');
-                    this.showNotification({
-                        title: 'Gagal',
-                        body: 'Tidak ada data story untuk disimpan',
-                    });
-                    return;
-                }
-
-                try {
-                    await this.#savePresenter.saveStory(this.#story);
-                    await this._updateButtonState();
-                } catch (error) {
-                    // Error sudah ditangani oleh SaveStoriesPresenter
-                }
-            });
+        if (!saveBtn || !deleteBtn) {
+            console.warn('Action buttons not found; DOM may not be fully rendered');
+            return;
         }
 
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', async () => {
-                try {
-                    await this.#savePresenter.deleteStory(this.#storyId);
-                    await this._updateButtonState();
-                } catch (error) {
-                    // Error sudah ditangani oleh SaveStoriesPresenter
-                }
-            });
-        }
+        saveBtn.addEventListener('click', async () => {
+            if (!this.#story) {
+                this.showNotification({
+                    title: 'Gagal',
+                    body: 'Tidak ada data story untuk disimpan',
+                });
+                return;
+            }
+            try {
+                await this.#savePresenter.saveStory(this.#story);
+                await this._updateButtonState();
+                this.showNotification({
+                    title: 'Berhasil',
+                    body: 'Story disimpan untuk akses offline',
+                });
+            } catch (error) {
+                this.showNotification({
+                    title: 'Gagal',
+                    body: 'Gagal menyimpan story',
+                });
+            }
+        });
+
+        deleteBtn.addEventListener('click', async () => {
+            try {
+                await this.#savePresenter.deleteStory(this.#storyId);
+                await this._updateButtonState();
+                this.showNotification({
+                    title: 'Berhasil',
+                    body: 'Story dihapus dari penyimpanan offline',
+                });
+            } catch (error) {
+                this.showNotification({
+                    title: 'Gagal',
+                    body: 'Gagal menghapus story',
+                });
+            }
+        });
     }
 }

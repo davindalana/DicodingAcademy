@@ -7,7 +7,8 @@ module.exports = {
         app: path.resolve(__dirname, 'src/index.js'),
     },
     output: {
-        filename: 'app.bundle.js',
+        filename: '[name].[contenthash].js',
+        chunkFilename: '[name].[contenthash].js',
         path: path.resolve(__dirname, 'dist'),
         clean: true,
         publicPath: '/',  // penting untuk routing dan static assets
@@ -40,13 +41,13 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'index.html'),  // sesuaikan lokasi index.html
-            inject: 'body',  // inject script di body
+            inject: 'body',
         }),
         new CopyWebpackPlugin({
             patterns: [
                 {
                     from: path.resolve(__dirname, 'src/public/icons/'),
-                    to: 'icons/',  // relatif ke folder output dist
+                    to: 'icons/',
                 },
                 {
                     from: path.resolve(__dirname, 'src/public/manifest.json'),

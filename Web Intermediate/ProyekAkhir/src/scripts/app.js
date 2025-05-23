@@ -45,8 +45,6 @@ export default class App {
   }
 
   #setupDrawer() {
-    console.log('Drawer Button:', this.#drawerButton);
-    console.log('Drawer Navigation:', this.#drawerNavigation);
     if (!this.#drawerButton || !this.#drawerNavigation) {
       console.error('Drawer button or navigation not found');
       return;
@@ -54,7 +52,6 @@ export default class App {
     this.#drawerButton.addEventListener('click', (event) => {
       event.stopPropagation();
       this.#drawerNavigation.classList.toggle('open');
-      console.log('Drawer classes:', this.#drawerNavigation.classList);
     });
     document.body.addEventListener('click', (event) => {
       const isTargetInsideDrawer = this.#drawerNavigation.contains(event.target);
@@ -76,10 +73,6 @@ export default class App {
     const isLogin = !!getAccessToken();
     const navListMain = this.#drawerNavigation.querySelector('#navlist-main');
     const navList = this.#drawerNavigation.querySelector('#navlist');
-
-    console.log('Is logged in:', isLogin);
-    console.log('NavListMain:', navListMain);
-    console.log('NavList:', navList);
     if (!isLogin) {
       navListMain.innerHTML = '';
       navList.innerHTML = generateUnauthenticatedNavigationListTemplate();
@@ -88,8 +81,6 @@ export default class App {
     }
     navListMain.innerHTML = generateMainNavigationListTemplate();
     navList.innerHTML = generateAuthenticatedNavigationListTemplate();
-    console.log('Authenticated nav main:', navListMain.innerHTML);
-    console.log('Authenticated nav:', navList.innerHTML);
 
     const logoutButton = document.getElementById('logout-button');
     logoutButton.addEventListener('click', (event) => {
@@ -167,14 +158,10 @@ export default class App {
             return;
           }
           try {
-            console.log('Merender halaman...');
             const renderedContent = await page.render();
             this.#content.innerHTML = renderedContent;
-            console.log('DOM diperbarui untuk rute:', url);
             if (page.afterRender) {
-              console.log('Menjalankan afterRender...');
               await page.afterRender();
-              console.log('afterRender selesai');
             }
           } catch (error) {
             console.error('Error saat merender halaman:', error);

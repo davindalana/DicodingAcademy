@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     skipLinkButton,
   });
 
-  // Skip to content accessibility (tidak perlu cek app.skipLinkButton, cukup pakai yang sudah diambil)
+  // Skip to content
   skipLinkButton?.addEventListener('click', (event) => {
     event.preventDefault();
     content?.focus();
@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     isRendering = false;
   }
 
-  // Re-render saat hash berubah
   window.addEventListener('hashchange', async () => {
     try {
       await app.renderPage();
@@ -49,7 +48,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       console.error('Render gagal:', error);
     } finally {
-      Camera.stopAllStreams(); // Hentikan kamera setiap ganti halaman
+      Camera.stopAllStreams();
     }
   });
+
+  // ✅ Register Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.bundle.js')
+        .then((registration) => {
+          console.log('✅ Service Worker terdaftar:', registration);
+        })
+        .catch((error) => {
+          console.error('❌ Gagal daftar Service Worker:', error);
+        });
+    });
+  }
 });
